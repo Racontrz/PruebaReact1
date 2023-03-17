@@ -1,25 +1,25 @@
-import CardsRender from './CardsRender'
 import Form from 'react-bootstrap/Form';
 import { useState, useEffect } from 'react';
-
-/* const urlApi = 'https://pokeapi.co/api/v2/pokemon/1' */
-const urlApi = 'https://jsonplaceholder.typicode.com/users'
-
-
-
+import Characters from './Characters';
 
 function MiApi() {
   const [texto, setTexto] = useState('')
-  const [apiData, setApiData] = useState([])
+  const [characters, setCharacters] = useState([])
+  
+  const getData = async() => {
+    const res = await fetch(`https://rickandmortyapi.com/api/character/?name=${texto}`);
+    const data = await res.json();
+    // desestructuracion de data / es para no estar llamando data.name .image . etc
+    const { results } = data
+         
+    setCharacters(results)
+    
+    }
+
   useEffect(()=>{
     getData()
-  }, [])
-
-  const getData = async() =>{
-    const res = await fetch(urlApi)
-    const data = await res.json()
-    setApiData(data)
-  }  
+  }, [texto])
+  
   return (
     <div>
       <Form className="d-flex">
@@ -32,16 +32,9 @@ function MiApi() {
           onChange = {(e) => setTexto (e.target.value )}
         />
       </Form>
+      {/* props es la info que comparte entre padres e hijos */}
+    <Characters characters={characters} /> 
  
-      <div className='d-flex flex-wrap'>
-        {apiData.filter((item) => {
-          return texto.toLocaleLowerCase() === '' ? item : item.name.toLowerCase().includes(texto) ||
-            texto.toLocaleLowerCase() === '' ? item : item.email.toLowerCase().includes(texto) ||
-            texto.toLocaleLowerCase() === '' ? item : item.username.toLowerCase().includes(texto)
-        }).map(getData => <CardsRender key={getData.id} colabs={getData} />)}
-
-      </div>
-    
     </div>
     
   );
